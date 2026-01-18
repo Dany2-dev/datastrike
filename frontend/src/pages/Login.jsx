@@ -1,21 +1,26 @@
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
+
 export default function Login() {
-  const handleGoogleLogin = () => {
-    window.location.href =
-      `${import.meta.env.VITE_API_URL}/auth/login/google`;
-  };
+  const { user, loading, loginWithGoogle } = useAuth();
+
+  if (loading) return <p>Cargando...</p>;
+
+  // 🔥 SI YA ESTÁ LOGUEADO, FUERA DE /login
+  if (user) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-900">
-      <div className="bg-white p-10 rounded-lg shadow-lg w-96 text-center">
-        <h2 className="text-2xl font-bold mb-6">Bienvenido</h2>
+    <div className="h-screen flex flex-col items-center justify-center">
+      <h1 className="text-3xl font-bold mb-6">Bienvenido</h1>
 
-        <button
-          onClick={handleGoogleLogin}
-          className="w-full bg-red-600 text-white p-3 rounded-lg"
-        >
-          Iniciar sesión con Google
-        </button>
-      </div>
+      <button
+        onClick={loginWithGoogle}
+        className="px-6 py-3 border rounded hover:bg-gray-100"
+      >
+        Iniciar sesión con Google
+      </button>
     </div>
   );
 }

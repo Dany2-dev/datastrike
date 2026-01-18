@@ -34,4 +34,8 @@ def kpis_equipo(
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     finally:
-        os.remove(path)
+        try:
+            os.remove(path)
+        except PermissionError:
+            pass
+

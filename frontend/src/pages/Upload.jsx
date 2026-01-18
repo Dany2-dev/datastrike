@@ -7,16 +7,25 @@ export default function Upload() {
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!file) return;
+    if (!file) {
+      setStatus("Selecciona un archivo");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("file", file);
 
     try {
       setStatus("Subiendo...");
-      await api.post("/files/upload", formData);
+      await api.post("/files/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       setStatus("Archivo subido correctamente");
-    } catch {
+      setFile(null);
+    } catch (err) {
+      console.error(err);
       setStatus("Error al subir archivo");
     }
   };

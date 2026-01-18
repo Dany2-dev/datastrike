@@ -36,17 +36,16 @@ async def auth_google(request: Request, db=Depends(get_db)):
     jwt_token = create_access_token({"sub": str(user.id)})
 
     response = RedirectResponse(FRONTEND_URL)
+    # Así debería verse al final de tu función de login/callback
     response.set_cookie(
         key="access_token",
         value=jwt_token,
         httponly=True,
-        samesite="none",
+        samesite="lax",
         secure=False,
         path="/"
     )
-
-    return response
-
+    return response # <--- ESTO ES VITAL
 @router.get("/me")
 def me(user: User = Depends(get_current_user)):
     return {

@@ -1,13 +1,12 @@
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 from app.db.session import get_db
 from app.utils.stats_loader import load_stats
 from app.services.stats_service import (
     merge_stats_with_players,
     filter_stats_by_equipo
 )
-import tempfile, os
+import tempfile, os, gc
 
 router = APIRouter()
 
@@ -26,11 +25,18 @@ def upload_stats(
     try:
         df = load_stats(path)
         merged = merge_stats_with_players(db, df)
-        return merged.fillna("").to_dict(orient="records")
+        res = merged.fillna("").to_dict(orient="records")
+        del df 
+        return res
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     finally:
-        os.remove(path)
+        gc.collect() 
+        if os.path.exists(path):
+            try:
+                os.remove(path)
+            except:
+                pass
 
 @router.post("/by-equipo/{equipo_id}")
 def stats_por_equipo(
@@ -43,8 +49,15 @@ def stats_por_equipo(
         df = load_stats(path)
         merged = merge_stats_with_players(db, df)
         filtered = filter_stats_by_equipo(db, merged, equipo_id)
-        return filtered.fillna("").to_dict(orient="records")
+        res = filtered.fillna("").to_dict(orient="records")
+        del df
+        return res
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     finally:
-        os.remove(path)
+        gc.collect()
+        if os.path.exists(path):
+            try:
+                os.remove(path)
+            except:
+                pass

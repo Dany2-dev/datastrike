@@ -63,7 +63,7 @@ def merge_stats_with_players(db: Session, df_stats: pd.DataFrame):
 
     return result
 
-def filter_stats_by_equipo(df_stats: pd.DataFrame, equipo_id: int):
+def filter_stats_by_equipo(db: Session, df_stats: pd.DataFrame, equipo_id: int):
     if df_stats is None or df_stats.empty:
         return df_stats
 

@@ -29,8 +29,10 @@ app.add_middleware(
 app.add_middleware(
     SessionMiddleware,
     secret_key=SECRET_KEY,
-    same_site="lax"
+    same_site="lax",
+    https_only=False
 )
+
 
 if ENV == "dev":
     @app.on_event("startup")

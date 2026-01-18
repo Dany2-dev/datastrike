@@ -1,17 +1,40 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
 
+# =========================
+# BASE
+# =========================
+BASE_DIR = Path(__file__).resolve().parents[3]  # carpeta datastrike/
+
 ENV = os.getenv("ENV", "dev")
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+# =========================
+# DATABASE
+# =========================
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    f"sqlite:///{BASE_DIR / 'data' / 'datastrike.db'}"
+)
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+# =========================
+# SECURITY
+# =========================
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080"))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(
+    os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080")
+)
 
+# =========================
+# GOOGLE AUTH
+# =========================
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 
+# =========================
+# FRONTEND
+# =========================
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
