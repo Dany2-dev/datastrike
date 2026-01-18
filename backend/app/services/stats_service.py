@@ -61,6 +61,9 @@ def merge_stats_with_players(db: Session, df_stats: pd.DataFrame):
     result["jugador"] = result["jugador"].fillna("Desconocido")
     result["imagen_jugador"] = result["imagen_jugador"].fillna("")
 
+    if "player_id" in result.columns and "id_jugador" not in result.columns:
+        result = result.rename(columns={"player_id": "id_jugador"})
+        
     return result
 
 def filter_stats_by_equipo(db: Session, df_stats: pd.DataFrame, equipo_id: int):

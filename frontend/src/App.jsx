@@ -3,30 +3,33 @@ import { AuthProvider } from "./auth/AuthContext";
 import RequireAuth from "./auth/RequireAuth";
 
 import Login from "./pages/Login";
+import SelectEquipo from "./pages/SelectEquipo";
 import Dashboard from "./pages/Dashboard";
-import Upload from "./pages/Upload";
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Login */}
           <Route path="/login" element={<Login />} />
 
+          {/* Selección de equipo */}
           <Route
             path="/"
             element={
               <RequireAuth>
-                <Dashboard />
+                <SelectEquipo />
               </RequireAuth>
             }
           />
 
+          {/* Dashboard por equipo */}
           <Route
-            path="/upload"
+            path="/dashboard/:equipoId"
             element={
               <RequireAuth>
-                <Upload />
+                <Dashboard />
               </RequireAuth>
             }
           />

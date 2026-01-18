@@ -6,6 +6,8 @@ from app.db.session import get_db
 from app.utils.stats_loader import load_stats
 from app.services.stats_service import merge_stats_with_players, filter_stats_by_equipo
 from app.services.kpi_service import kpis_por_periodo
+from app.services.kpi_service import calcular_kpis
+
 
 router = APIRouter()
 
@@ -29,8 +31,8 @@ def kpis_equipo(
 
         if filtered is None or filtered.empty:
             raise HTTPException(status_code=422, detail="No hay datos")
-
-        return kpis_por_periodo(filtered)
+        print(filtered.columns.tolist())
+        return calcular_kpis(filtered)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     finally:

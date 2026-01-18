@@ -6,7 +6,6 @@ export default function Login() {
 
   if (loading) return <p>Cargando...</p>;
 
-  // 🔥 SI YA ESTÁ LOGUEADO, FUERA DE /login
   if (user) {
     return <Navigate to="/" replace />;
   }
