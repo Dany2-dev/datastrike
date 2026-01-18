@@ -40,10 +40,11 @@ async def auth_google(request: Request, db=Depends(get_db)):
         key="access_token",
         value=jwt_token,
         httponly=True,
-        secure=False,   # true en prod
-        samesite="lax",
-        max_age=60 * 60 * 24 * 7
+        samesite="none",
+        secure=False,
+        path="/"
     )
+
     return response
 
 @router.get("/me")
