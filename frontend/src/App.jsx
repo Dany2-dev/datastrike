@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "./auth/AuthContext";
 import RequireAuth from "./auth/RequireAuth";
 
@@ -8,11 +8,15 @@ import Dashboard from "./pages/Dashboard";
 
 import StaggeredMenu from "./components/ui/StaggeredMenu";
 
-function App() {
+function AppLayout() {
+  const location = useLocation();
+
+  const hideMenuRoutes = ["/login"];
+  const hideMenu = hideMenuRoutes.includes(location.pathname);
+
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        {/* MENÚ GLOBAL */}
+    <>
+      {!hideMenu && (
         <StaggeredMenu
           position="left"
           isFixed={true}
@@ -21,38 +25,47 @@ function App() {
           openMenuButtonColor="#5227FF"
           items={[
             { label: "Overview", ariaLabel: "Overview", link: "/" },
-            { label: "Teams", ariaLabel: "Teams", link: "http://127.0.0.1:5173/" },
+            { label: "Teams", ariaLabel: "Teams", link: "/" },
             { label: "Players", ariaLabel: "Players", link: "/players" },
-            { label: "Analysis", ariaLabel: "Analysis", link: "http://127.0.0.1:5173/dashboard/5" },
+            { label: "Analysis", ariaLabel: "Analysis", link: "/dashboard/5" },
             { label: "Reports", ariaLabel: "Reports", link: "/reports" },
             { label: "Settings", ariaLabel: "Settings", link: "/settings" },
           ]}
         />
+      )}
 
-        {/* WRAPPER GLOBAL */}
-        <div className="min-h-screen w-full">
-          <Routes>
-            <Route path="/login" element={<Login />} />
+      <div className="min-h-screen w-full">
+        <Routes>
+          <Route path="/login" element={<Login />} />
 
-            <Route
-              path="/"
-              element={
-                <RequireAuth>
-                  <SelectEquipo />
-                </RequireAuth>
-              }
-            />
+          <Route
+            path="/"
+            element={
+              <RequireAuth>
+                <SelectEquipo />
+              </RequireAuth>
+            }
+          />
 
-            <Route
-              path="/dashboard/:equipoId"
-              element={
-                <RequireAuth>
-                  <Dashboard />
-                </RequireAuth>
-              }
-            />
-          </Routes>
-        </div>
+          <Route
+            path="/dashboard/:equipoId"
+            element={
+              <RequireAuth>
+                <Dashboard />
+              </RequireAuth>
+            }
+          />
+        </Routes>
+      </div>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <AppLayout />
       </BrowserRouter>
     </AuthProvider>
   );

@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+
 import GradientBlinds from "../components/background/GradientBlinds";
 import TextType from "./TextType";
 import GradientText from "./GradientText";
-import StaggeredMenu from "../components/ui/StaggeredMenu";
-import "./LoginPanel.css";
 
+import "./LoginPanel.css";
 
 export default function Login() {
   const { user, loading, loginWithGoogle } = useAuth();
@@ -16,39 +16,20 @@ export default function Login() {
   if (user) return <Navigate to="/" replace />;
 
   return (
-        
     <div className="fixed inset-0 min-h-screen w-full bg-black font-sans overflow-x-hidden">
       {/* 1. BACKGROUND */}
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <GradientBlinds
-            gradientColors={["#350085", "#000000"]}
-            blindCount={4}
-            angle={25}
-            noise={0.15}
-          />
-        </div>
-     
-      {/* 2. MENÚ (Capa Superior) 
-          Lo envolvemos en un div con el z-index más alto posible */}
-      <div className="fixed top-5 right-5 z-[9999]">
-        <StaggeredMenu
-            position="right"
-            accentColor="#5227FF"
-            menuButtonColor="#111827"      // 🔴 oscuro
-            openMenuButtonColor="#5227FF"  // 🔵 azul al abrir
-            isFixed={true}
-            items={[
-              { label: "Dashboard", link: "/dashboard" },
-              { label: "Jugadores", link: "/jugadores" },
-              { label: "Comparativas", link: "/comparativas" },
-              { label: "Reportes", link: "/reportes" },
-            ]}
-          />
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <GradientBlinds
+          gradientColors={["#350085", "#000000"]}
+          blindCount={4}
+          angle={25}
+          noise={0.15}
+        />
       </div>
 
-      {/* 3. CONTENIDO (Capa Media) */}
+      {/* 2. CONTENIDO */}
       <div className="relative z-10 flex min-h-screen w-full flex-col items-center justify-center p-4">
-        {/* ... resto de tu contenido (Título, Login Panel, Footer) */}
+        {/* TÍTULO */}
         <div className="mb-10 shrink-0">
           <h1 className="font-sportypo text-center leading-none text-[6vw] drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
             <GradientText
@@ -69,9 +50,8 @@ export default function Login() {
           </h1>
         </div>
 
-        {/* LOGIN PANEL NUEVO */}
+        {/* LOGIN PANEL */}
         <div className={`container ${active ? "active" : ""}`} id="container">
-
           {/* SIGN IN */}
           <div className="form-container sign-in">
             <form>
@@ -80,12 +60,11 @@ export default function Login() {
 
               <button type="button" onClick={loginWithGoogle}>
                 Sign In with Google
-
               </button>
             </form>
           </div>
 
-          {/* SIGN UP (VISUAL, NO FUNCIONAL AÚN) */}
+          {/* SIGN UP (VISUAL) */}
           <div className="form-container sign-up">
             <form>
               <h1>Create Account</h1>
@@ -102,21 +81,28 @@ export default function Login() {
               <div className="toggle-panel toggle-left">
                 <h1>Welcome Back!</h1>
                 <p>Already have an account?</p>
-                <button className="hidden" onClick={() => setActive(false)}>
+                <button
+                  type="button"
+                  className="hidden"
+                  onClick={() => setActive(false)}
+                >
                   Sign In
                 </button>
               </div>
 
               <div className="toggle-panel toggle-right">
-                <h1>Hello, !</h1>
+                <h1>Hello!</h1>
                 <p>Start your journey with DataStrike</p>
-                <button className="hidden" onClick={() => setActive(true)}>
+                <button
+                  type="button"
+                  className="hidden"
+                  onClick={() => setActive(true)}
+                >
                   Sign Up
                 </button>
               </div>
             </div>
           </div>
-
         </div>
 
         {/* FOOTER */}
