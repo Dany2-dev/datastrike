@@ -8,4 +8,5 @@ SQLAlchemy==2.0.45
 uvicorn
 itsdangerous
 python-multipart
+httpx
 
