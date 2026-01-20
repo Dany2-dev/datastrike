@@ -368,3 +368,9 @@
 .staggered-menu-wrapper[data-open] .sm-logo {
   opacity: 0;
 }
+.sm-toggle {
+  pointer-events: auto;
+}
+.sm-toggle {
+  background: red !important;
+}

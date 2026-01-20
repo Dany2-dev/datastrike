@@ -4,7 +4,9 @@ import { useAuth } from "../auth/AuthContext";
 import GradientBlinds from "../components/background/GradientBlinds";
 import TextType from "./TextType";
 import GradientText from "./GradientText";
+import StaggeredMenu from "../components/ui/StaggeredMenu";
 import "./LoginPanel.css";
+
 
 export default function Login() {
   const { user, loading, loginWithGoogle } = useAuth();
@@ -14,20 +16,40 @@ export default function Login() {
   if (user) return <Navigate to="/" replace />;
 
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black font-sans">
-      {/* BACKGROUND — NO SE TOCA */}
-      <GradientBlinds
-        gradientColors={["#350085", "#000000"]}
-        blindCount={4}
-        angle={25}
-        noise={0.15}
-      />
+        
+    <div className="fixed inset-0 min-h-screen w-full bg-black font-sans overflow-x-hidden">
+      {/* 1. BACKGROUND */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <GradientBlinds
+            gradientColors={["#350085", "#000000"]}
+            blindCount={4}
+            angle={25}
+            noise={0.15}
+          />
+        </div>
+     
+      {/* 2. MENÚ (Capa Superior) 
+          Lo envolvemos en un div con el z-index más alto posible */}
+      <div className="fixed top-5 right-5 z-[9999]">
+        <StaggeredMenu
+            position="right"
+            accentColor="#5227FF"
+            menuButtonColor="#111827"      // 🔴 oscuro
+            openMenuButtonColor="#5227FF"  // 🔵 azul al abrir
+            isFixed={true}
+            items={[
+              { label: "Dashboard", link: "/dashboard" },
+              { label: "Jugadores", link: "/jugadores" },
+              { label: "Comparativas", link: "/comparativas" },
+              { label: "Reportes", link: "/reportes" },
+            ]}
+          />
+      </div>
 
-      {/* CONTENIDO */}
-      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center">
-
-        {/* TÍTULO SUPERIOR (SE CONSERVA) */}
-        <div className="mb-10">
+      {/* 3. CONTENIDO (Capa Media) */}
+      <div className="relative z-10 flex min-h-screen w-full flex-col items-center justify-center p-4">
+        {/* ... resto de tu contenido (Título, Login Panel, Footer) */}
+        <div className="mb-10 shrink-0">
           <h1 className="font-sportypo text-center leading-none text-[6vw] drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
             <GradientText
               colors={["#5227FF", "#FF9FFC", "#B19EEF", "#5227FF"]}
@@ -98,7 +120,7 @@ export default function Login() {
         </div>
 
         {/* FOOTER */}
-        <p className="text-white/20 text-[11px] uppercase tracking-[0.8em] font-light mt-8">
+        <p className="font-sportypo text-white/20 text-[11px] uppercase tracking-[0.8em] font-light mt-8">
           DanyDev Sistem v 2.0.1
         </p>
       </div>

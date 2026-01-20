@@ -25,9 +25,9 @@ export default function SelectEquipo() {
   /* ===== MENÚ LATERAL (AGREGADO, NO MODIFICA NADA) ===== */
   const mainMenuItems = [
   { label: "Overview", ariaLabel: "Overview", link: "/" },
-  { label: "Teams", ariaLabel: "Teams", link: "/teams" },
+  { label: "Teams", ariaLabel: "Teams", link: "http://127.0.0.1:5173/" },
   { label: "Players", ariaLabel: "Players", link: "/players" },
-  { label: "Analysis", ariaLabel: "Analysis", link: "/analysis" },
+  { label: "Analysis", ariaLabel: "Analysis", link: "http://127.0.0.1:5173/dashboard/5" },
   { label: "Reports", ariaLabel: "Reports", link: "/reports" },
   { label: "Settings", ariaLabel: "Settings", link: "/settings" },
   
@@ -84,7 +84,7 @@ export default function SelectEquipo() {
               className="tracking-tighter"
             >
               <TextType 
-                text={[" SELECT", " YOUR","  TEAM"]}
+                text={[" SELECT", " YOUR", " TEAM"]}
                 typingSpeed={110}
                 pauseDuration={2000}
                 showCursor={true}
@@ -93,8 +93,9 @@ export default function SelectEquipo() {
               />
             </GradientText>
           </h1>
-          <p className="text-white/40 mt-1 text-[10px] uppercase tracking-[0.4em] font-light">
-            System Terminal / Select Unit
+
+          <p className="racing-sans-one text-3xl font-black tracking-tight text-slate-800">
+            @DanyDev
           </p>
         </div>
 
@@ -112,12 +113,6 @@ export default function SelectEquipo() {
           </div>
         </div>
 
-        {/* Footer Fijo */}
-        <div className="py-6 text-center flex-shrink-0">
-          <p className="text-white/10 text-[9px] uppercase tracking-[0.6em] font-light">
-            DanyDev Sistem v 2.0.1
-          </p>
-        </div>
       </div>
     </div>
   );

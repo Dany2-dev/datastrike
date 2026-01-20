@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import api from "../services/api";
 import { motion, AnimatePresence } from "framer-motion";
 import Pitch from "../components/Pitch";
+import DotGrid from "../components/background/DotGrid";
+
 
 // Iconos rápidos (simulados o puedes instalar react-icons)
 const IconChevron = ({ open }) => (
@@ -104,32 +106,77 @@ export default function Dashboard() {
     <motion.div 
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
-      className="min-h-screen bg-[#f8fafc] p-4 md:p-8 space-y-8 font-sans text-slate-900"
+      className="relative min-h-screen w-full overflow-x-hidden"
     >
+        <div
+            className="fixed inset-0 -z-10 pointer-events-none"
+            style={{ width: "100vw", height: "100vh" }}
+          >
+            <DotGrid
+              dotSize={5}
+              gap={15}
+              baseColor="#e5e7eb"
+              activeColor="#2563eb"
+              proximity={120}
+              shockRadius={250}
+              shockStrength={5}
+              resistance={750}
+              returnDuration={1.5}
+              style={{ width: "100%", height: "100%" }}
+            />
+          </div>
+
       {/* ===== HEADER PRINCIPAL ===== */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
         <div className="space-y-1">
-          <h1 className="text-3xl font-black tracking-tight text-slate-800">Panel de Control</h1>
+          <h1 className="racing-sans-one text-3xl font-black tracking-tight text-slate-800">Panel de Control</h1>
           <p className="text-slate-500 font-medium">Gestión de métricas avanzadas y rendimiento</p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="relative group">
-            <input
-              type="file"
-              accept=".xlsx,.csv"
-              onChange={(e) => setFile(e.target.files[0])}
-              className="text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all cursor-pointer"
-            />
+        <div className="w-full max-w-3xl mx-auto mt-6">
+          <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white/70 backdrop-blur shadow-sm p-6 flex flex-col md:flex-row items-center gap-4">
+
+            {/* Texto */}
+            <div className="flex-1">
+              <h3 className="font-sportypo text-xl text-slate-800">
+                Cargar archivo de estadísticas
+              </h3>
+              <p className="text-sm text-slate-500">
+                Formato permitido: Excel (.xlsx) o CSV
+              </p>
+            </div>
+
+            {/* Input */}
+            <label className="relative cursor-pointer">
+              <input
+                type="file"
+                accept=".xlsx,.csv"
+                onChange={(e) => setFile(e.target.files[0])}
+                className="hidden"
+              />
+              <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition">
+                Seleccionar archivo
+              </span>
+            </label>
+
+            {/* Botón */}
+            <button
+              onClick={calcularKpis}
+              disabled={!file || loading}
+              className="px-6 py-2.5 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 transition"
+            >
+              {loading ? "Procesando..." : "Procesar Data"}
+            </button>
           </div>
-          <button
-            onClick={calcularKpis}
-            disabled={!file || loading}
-            className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-xl font-bold shadow-lg shadow-blue-200 transition-all active:scale-95 flex items-center gap-2"
-          >
-            {loading ? "Procesando..." : "Procesar Data"}
-          </button>
+
+          {/* Nombre del archivo */}
+          {file && (
+            <p className="mt-2 text-center text-xs text-slate-500">
+              Archivo seleccionado: <span className="font-bold">{file.name}</span>
+            </p>
+          )}
         </div>
+
       </header>
 
       {/* ===== LOADING STATE ===== */}
