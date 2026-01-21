@@ -5,9 +5,9 @@ import MagicBento from "../components/ui/MagicBento";
 import logoDataStrike from "../assets/logos/logo-datastrike.png"; 
 
 /**
- * Dashboard principal corregido.
- * Gestiona el estado global de los datos cargados para sincronizar
- * la subida del Excel con la visualización en las tablas.
+ * Dashboard principal.
+ * Se ha eliminado el Chart superior para limpiar la interfaz y evitar solapamientos.
+ * Gestiona el estado global de los datos cargados para sincronizar con MagicBento.
  */
 export default function Dashboard() {
   const { equipoId } = useParams();
@@ -20,21 +20,15 @@ export default function Dashboard() {
 
   /**
    * Maneja la respuesta exitosa del servidor tras subir el Excel.
-   * 'data' contiene el array de eventos (los 228 registros vistos en consola).
+   * ❗ NO se limpia uploadedData para evitar desmontes de ECharts
    */
   const handleUploadSuccess = (data) => {
     console.log("Dashboard: Recibiendo datos de carga exitosa", data);
-    
-    // 1. Limpiamos datos anteriores para evitar conflictos
-    setUploadedData(null); 
-    
-    // 2. Usamos un pequeño delay para que React registre el "vacío" 
-    // y luego monte la tabla con los datos nuevos
-    setTimeout(() => {
-      setUploadedData(data); 
-      setRefreshKey(prev => prev + 1);
-    }, 50);
+
+    setUploadedData(data);
+    setRefreshKey(prev => prev + 1);
   };
+
   // Configuración de los ítems del menú de navegación
   const menuItems = [
     {
@@ -72,56 +66,60 @@ export default function Dashboard() {
       <main className="pt-32 pb-10 flex flex-col items-center justify-center min-h-screen px-6 border-none">
         
         <div className="w-full max-w-7xl flex justify-center border-none">
-            {/* Pasamos 'initialData' a MagicBento. 
-              Este prop contiene los eventos que se sumarán en la tabla.
-            */}
-            <MagicBento 
-              key={refreshKey} 
-              equipoId={equipoId} 
-              initialData={uploadedData} 
-              textAutoHide={true}
-              enableStars={true}
-              enableSpotlight={true}
-              enableBorderGlow={true}
-              enableTilt={false}
-              enableMagnetism={false}
-              clickEffect={true}
-              spotlightRadius={600}
-              particleCount={12}
-              glowColor="132, 0, 255"
-              disableAnimations={false}
-            />
+          {/* Los datos se siguen pasando a MagicBento para las vistas expandidas */}
+          <MagicBento 
+            key={refreshKey} 
+            equipoId={equipoId} 
+            initialData={uploadedData} 
+            textAutoHide={true}
+            enableStars={true}
+            enableSpotlight={true}
+            enableBorderGlow={true}
+            enableTilt={false}
+            enableMagnetism={false}
+            clickEffect={true}
+            spotlightRadius={600}
+            particleCount={12}
+            glowColor="132, 0, 255"
+            disableAnimations={false}
+          />
         </div>
 
       </main>
 
-      {/* 3. Estilos Globales corregidos. 
-        Se usa una etiqueta normal para evitar errores de 'non-boolean attribute jsx/global'.
-      */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        .card-grid, 
-        .bento-section,
-        .magic-bento-card-container {
-            border-bottom: none !important;
-            outline: none !important;
-            border: none !important;
-        }
-        body {
-            background-color: #020617;
-            margin: 0;
-            padding: 0;
-        }
-        ::-webkit-scrollbar {
-          width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-          background: #020617;
-        }
-        ::-webkit-scrollbar-thumb {
-          background: #1e1b4b;
-          border-radius: 10px;
-        }
-      `}} />
+      {/* 3. Estilos Globales para asegurar que no haya bordes extraños */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            .card-grid, 
+            .bento-section,
+            .magic-bento-card-container {
+              border-bottom: none !important;
+              outline: none !important;
+              border: none !important;
+            }
+
+            body {
+              background-color: #020617;
+              margin: 0;
+              padding: 0;
+            }
+
+            ::-webkit-scrollbar {
+              width: 8px;
+            }
+
+            ::-webkit-scrollbar-track {
+              background: #020617;
+            }
+
+            ::-webkit-scrollbar-thumb {
+              background: #1e1b4b;
+              border-radius: 10px;
+            }
+          `
+        }}
+      />
     </div>
   );
 }

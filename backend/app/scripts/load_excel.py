@@ -10,8 +10,8 @@ from app.models.jugador import Jugador
 # ─────────────────────────────
 BASE_DIR = Path(__file__).resolve().parents[3]
 
-EQUIPOS_EXCEL = BASE_DIR / "data" / "Equipos_logos.xlsx"
-JUGADORES_EXCEL = BASE_DIR / "data" / "Jugadores_Cordobez.xlsx"
+EQUIPOS_EXCEL = BASE_DIR / "data" / "Equipos.xlsx"
+JUGADORES_EXCEL = BASE_DIR / "data" / "LigaPremier.xlsx"
 
 # ─────────────────────────────
 # Utilidades
@@ -21,14 +21,20 @@ def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df.where(pd.notnull(df), None)  # NaN → None
 
 # ─────────────────────────────
+# Limpieza de tablas
+# ─────────────────────────────
+def clear_tables(db):
+    print("🧹 Eliminando datos anteriores...")
+    db.query(Jugador).delete()
+    db.query(Equipo).delete()
+    db.commit()
+
+# ─────────────────────────────
 # Carga de datos
 # ─────────────────────────────
 def load_equipos(db, df: pd.DataFrame):
     for _, row in df.iterrows():
         equipo_id = int(row["id_club"])
-
-        if db.query(Equipo).filter(Equipo.id == equipo_id).first():
-            continue
 
         equipo = Equipo(
             id=equipo_id,
@@ -43,17 +49,12 @@ def load_equipos(db, df: pd.DataFrame):
 
 def load_jugadores(db, df: pd.DataFrame):
     for _, row in df.iterrows():
-        jugador_id = int(row["id_jugador"])
-
-        if db.query(Jugador).filter(Jugador.id == jugador_id).first():
-            continue
-
         jugador = Jugador(
-            id=jugador_id,                      # 🔑 ID real para stats
+            id=int(row["id_jugador"]),          # 🔑 ID compuesto
             nombre=row["nombre"],
             numero=row["numcamisa"] if "numcamisa" in df.columns else None,
             imagen_url=row["imagen_jugador"] if "imagen_jugador" in df.columns else None,
-            equipo_id=int(row["id_club"])       # 🔗 FK correcta
+            equipo_id=int(row["id_club"])       # 🔗 FK
         )
         db.add(jugador)
 
@@ -63,11 +64,13 @@ def load_jugadores(db, df: pd.DataFrame):
 # Main
 # ─────────────────────────────
 def main():
-    print("📥 Cargando datos desde Excel...")
+    print("🚀 Iniciando carga desde Excel...")
 
     db = SessionLocal()
 
     try:
+        clear_tables(db)
+
         df_equipos = normalize_columns(pd.read_excel(EQUIPOS_EXCEL))
         df_jugadores = normalize_columns(pd.read_excel(JUGADORES_EXCEL))
 
@@ -77,6 +80,7 @@ def main():
         print("✅ Datos cargados correctamente")
 
     except Exception as e:
+        db.rollback()
         print("❌ Error:", e)
 
     finally:
