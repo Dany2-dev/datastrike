@@ -1,0 +1,146 @@
+/* CONTENEDOR PRINCIPAL */
+.player-table-wrapper {
+  width: 100%;
+  color: #e5e7eb;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* BUSCADOR (TOOLBAR) */
+.player-table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+}
+
+.table-search-input {
+  width: 100%;
+  background: rgba(2, 6, 23, 0.6);
+  border: 1px solid #334155;
+  padding: 10px 12px 10px 35px;
+  border-radius: 8px;
+  color: white;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.table-search-input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  opacity: 0.5;
+}
+
+/* ESTILO DE LA TABLA */
+.table-scroll-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.bento-stats-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* CABECERA */
+.bento-stats-table thead {
+  background: linear-gradient(90deg, #7c3aed, #6d28d9);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.bento-stats-table th {
+  padding: 14px 10px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: white;
+  border: none;
+}
+
+/* CELDAS Y FILAS */
+.bento-stats-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+  font-size: 0.95rem;
+}
+
+.bento-stats-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.bento-stats-table tbody tr:hover {
+  background: rgba(124, 58, 237, 0.1); /* Brillo púrpura muy sutil */
+}
+
+/* CELDA DEL JUGADOR */
+.player-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.player-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(124, 58, 237, 0.5);
+  object-fit: cover;
+  background: #1e293b;
+}
+
+.player-name {
+  font-weight: 500;
+}
+
+/* ESTADOS DE CARGA Y VACÍO */
+.table-loader, .no-data {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* ANIMACIÓN DE FILAS */
+.table-row-animate {
+  animation: slideInRow 0.4s ease forwards;
+}
+
+@keyframes slideInRow {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* SCROLLBAR PERSONALIZADO (Para la tabla si desborda) */
+.table-scroll-container::-webkit-scrollbar {
+  height: 6px;
+}
+.table-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+.table-scroll-container::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 10px;
+}

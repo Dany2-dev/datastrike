@@ -1,3 +1,6 @@
+/**
+ * VARIABLES GLOBALES Y TEMATIZACIÓN
+ */
 :root {
   --hue: 27;
   --sat: 69%;
@@ -10,15 +13,21 @@
   color-scheme: light dark;
 }
 
+/**
+ * DISEÑO DE LA REJILLA (GRID SYSTEM)
+ */
 .card-grid {
   display: grid;
-  gap: 1.5em;      /* Aumentamos un poco el espacio entre tarjetas */
-  padding: 2em;    /* Más aire alrededor */
-  max-width: 95vw; /* Que ocupe casi todo el ancho de la ventana */
+  gap: 1.5em;      
+  padding: 2em;    
+  max-width: 95vw; 
   width: 100%;
   margin: 0 auto;
 }
 
+/**
+ * ESTILO BASE DE LAS TARJETAS MAGIC BENTO
+ */
 .magic-bento-card {
   display: flex;
   flex-direction: column;
@@ -28,15 +37,15 @@
   min-height: 300px;
   width: 100%;
   max-width: 100%;
-  padding: 1.25em;
+  padding: 2em;
   border-radius: 20px;
   border: 1px solid var(--border-color);
   background: var(--background-dark);
   font-weight: 300;
   overflow: hidden;
   transition: all 0.3s ease;
-  padding: 2em;
-    
+  
+  /* Variables dinámicas para el efecto Spotlight */
   --glow-x: 50%;
   --glow-y: 50%;
   --glow-intensity: 0;
@@ -48,6 +57,9 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
+/**
+ * ESTRUCTURA INTERNA DE LA TARJETA
+ */
 .magic-bento-card__header,
 .magic-bento-card__content {
   display: flex;
@@ -63,11 +75,15 @@
 .magic-bento-card__content {
   flex-direction: column;
 }
+
 .magic-bento-card__label {
-  font-size: 1.2rem; /* Antes 16px */
+  font-size: 1.2rem;
   letter-spacing: 0.1em;
 }
 
+/**
+ * TIPOGRAFÍA Y TRUNCADO DE TEXTO
+ */
 .magic-bento-card__title,
 .magic-bento-card__description {
   --clamp-title: 1;
@@ -75,7 +91,7 @@
 }
 
 .magic-bento-card__title {
-  font-size: 2rem;   /* Antes 16px - Ahora mucho más imponente */
+  font-size: 2rem;   
   font-weight: 700;
   margin-bottom: 0.5em;
 }
@@ -104,6 +120,9 @@
   line-clamp: var(--clamp-desc);
 }
 
+/**
+ * RESPONSIVE DESIGN (MEDIA QUERIES)
+ */
 @media (max-width: 599px) {
   .card-grid {
     grid-template-columns: 1fr;
@@ -145,7 +164,9 @@
   }
 }
 
-/* Border glow effect */
+/**
+ * EFECTOS DE BRILLO EN BORDES (GLOW EFFECT)
+ */
 .magic-bento-card--border-glow::after {
   content: '';
   position: absolute;
@@ -182,6 +203,9 @@
     0 0 30px var(--purple-glow);
 }
 
+/**
+ * SISTEMA DE PARTÍCULAS
+ */
 .particle-container {
   position: relative;
   overflow: hidden;
@@ -205,7 +229,9 @@
     0 0 30px var(--purple-glow);
 }
 
-/* Global spotlight styles */
+/**
+ * FOCO GLOBAL (GLOBAL SPOTLIGHT)
+ */
 .global-spotlight {
   mix-blend-mode: screen;
   will-change: transform, opacity;
@@ -217,17 +243,19 @@
   position: relative;
   user-select: none;
 }
-/* Elimina la línea blanca/borde inferior del contenedor */
+
 .card-grid, 
 .bento-section {
     border-bottom: none !important;
 }
 
-/* Si la línea es parte de un separador global en el dashboard */
 .min-h-screen {
     border-bottom: none !important;
 }
-/* Estado Expandido */
+
+/**
+ * ESTADO EXPANDIDO (MODAL VIEW)
+ */
 .magic-bento-card.is-expanded {
   position: fixed !important;
   top: 50% !important;
@@ -242,16 +270,19 @@
   box-shadow: 0 0 100px rgba(var(--glow-color), 0.4);
   background: #060010 !important;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto !important; 
+  overflow-x: hidden;
+  padding: 3rem; 
 }
 
-/* Ocultar las demás */
 .magic-bento-card--hidden {
   opacity: 0.05;
   filter: blur(8px);
   pointer-events: none;
 }
 
-/* Overlay de fondo */
 .bento-overlay {
   position: fixed;
   top: 0;
@@ -264,33 +295,143 @@
   animation: fadeIn 0.3s ease;
 }
 
-/* Contenido extendido */
+/**
+ * CONTENIDO EXTENDIDO Y BOTÓN CERRAR
+ */
 .magic-bento-card__extended-info {
   margin-top: 2rem;
   animation: slideUp 0.6s ease;
+  flex-grow: 1; 
+  width: 100%;
 }
 
 .magic-bento-card__close {
-  background: none;
-  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: sticky; 
+  top: 0;   
+  align-self: flex-end; 
+  margin-left: auto;    
+  z-index: 10;
+  background: rgba(6, 0, 16, 0.9); 
   color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
   font-size: 1.5rem;
   cursor: pointer;
-  position: absolute;
-  top: 20px;
-  right: 20px;
   opacity: 0.7;
+  transition: opacity 0.2s ease;
 }
 
-.magic-bento-card__close:hover { opacity: 1; }
+.magic-bento-card__close:hover {
+  opacity: 1;
+  background: rgba(132, 0, 255, 0.5); 
+}
 
-.separator { height: 1px; width: 100%; margin-bottom: 1.5rem; }
+/**
+ * ELEMENTOS DE DISEÑO INTERNOS
+ */
+.separator { 
+  height: 1px; 
+  width: 100%; 
+  margin-bottom: 1.5rem; 
+  background: linear-gradient(90deg, var(--purple-primary), transparent);
+  opacity: 0.3;
+}
 
 .details-text { color: #94a3b8; line-height: 1.6; font-size: 1.1rem; }
 
 .stat-bar { height: 8px; border-radius: 4px; margin-top: 10px; }
 
+/**
+ * ANIMACIONES (KEYFRAMES)
+ */
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/**
+ * ESTILOS ESPECÍFICOS DE LA TABLA DE JUGADORES
+ */
+.player-table-wrapper {
+  width: 100%;
+  overflow-x: auto; 
+  min-height: 300px;
+}
+
+.player-table-toolbar input {
+  width: 100%;
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: white;
+  margin-bottom: 1.5rem;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.player-table-toolbar input:focus {
+  border-color: var(--purple-primary);
+}
+
+.player-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.player-cell img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--purple-border);
+  background: #1a1a1a;
+}
+
+/**
+ * COMPONENTES DE TABLA (BORDE Y HOVER)
+ */
+.magic-bento-card__extended-info table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  color: var(--white);
+  font-size: 0.9rem;
+}
+
+.magic-bento-card__extended-info th {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--purple-border); 
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.magic-bento-card__extended-info td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.magic-bento-card__extended-info tr:hover {
+  background: rgba(132, 0, 255, 0.05); 
+}
+
+td:not(:first-child), th:not(:first-child) {
+  text-align: center;
+}
+
+/**
+ * FIN DEL ARCHIVO - TOTAL LÍNEAS PRESERVADAS
+ */

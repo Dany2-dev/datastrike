@@ -1,69 +1,64 @@
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
 import os, tempfile
+import pandas as pd
 
 from app.db.session import get_db
 from app.utils.stats_loader import load_stats
 from app.services.stats_service import merge_stats_with_players, filter_stats_by_equipo
-from app.services.kpi_service import kpis_por_periodo, calcular_kpis
+from app.services.kpi_service import calcular_kpis
 
 router = APIRouter()
 
+# --- FUNCION AUXILIAR PARA PROCESAR ---
+def procesar_datos_kpi(db, equipo_id, df_input=None):
+    # Si df_input es None, filter_stats_by_equipo debe buscar en la DB
+    filtered = filter_stats_by_equipo(db, df_input, equipo_id)
+    
+    if filtered is None or (isinstance(filtered, pd.DataFrame) and filtered.empty):
+        return None
 
-def _tmp(file: UploadFile):
+    event_col = next(
+        (c for c in filtered.columns if c.lower() in ["event", "evento", "type"]),
+        None
+    )
+    
+    kpis = calcular_kpis(filtered)
+    eventos_dict = []
+    if not filtered.empty:
+        columnas = ["x", "y", "x2", "y2"]
+        if event_col: columnas.append(event_col)
+        # Filtramos solo columnas existentes para evitar errores
+        cols_to_use = [c for c in columnas if c in filtered.columns]
+        eventos_dict = filtered[cols_to_use].fillna(0).to_dict("records")
+
+    return {**kpis, "eventos": eventos_dict}
+
+# --- ENDPOINT PARA LA TABLA (GET) ---
+@router.get("/by-equipo/{equipo_id}")
+def get_kpis_equipo(equipo_id: int, db: Session = Depends(get_db)):
+    # Buscamos datos que ya existan en la base de datos
+    resultado = procesar_datos_kpi(db, equipo_id)
+    if not resultado:
+        # Devolvemos estructura vacía pero válida para que la tabla no de error
+        return {"por_jugador": {}, "eventos": []}
+    return resultado
+
+# --- ENDPOINT PARA CARGAR EXCEL (POST) ---
+@router.post("/by-equipo/{equipo_id}")
+def post_kpis_equipo(equipo_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
     suffix = os.path.splitext(file.filename)[1].lower()
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix, mode="wb") as tmp:
         tmp.write(file.file.read())
-        return tmp.name
-
-
-@router.post("/by-equipo/{equipo_id}")
-def kpis_equipo(
-    equipo_id: int,
-    file: UploadFile = File(...),
-    db: Session = Depends(get_db)
-):
-    path = _tmp(file)
+        path = tmp.name
+    
     try:
-        # 1️⃣ Cargar Excel
         df = load_stats(path)
-
-        # 2️⃣ Unir con jugadores
         merged = merge_stats_with_players(db, df)
-
-        # 3️⃣ Filtrar por equipo
-        filtered = filter_stats_by_equipo(db, merged, equipo_id)
-
-        if filtered is None or filtered.empty:
-            raise HTTPException(status_code=422, detail="No hay datos")
-
-        # 4️⃣ Detectar columna de evento
-        event_col = next(
-            (c for c in filtered.columns if c.lower() in ["event", "evento", "type"]),
-            None
-        )
-
-        if not event_col:
-            raise HTTPException(status_code=422, detail="Columna de eventos no encontrada")
-
-        # 5️⃣ Calcular KPIs
-        kpis = calcular_kpis(filtered)
-
-        # 6️⃣ Devolver KPIs + eventos crudos para el frontend
-        return {
-            **kpis,
-            "eventos": filtered[
-                ["x", "y", "x2", "y2", event_col]
-            ]
-            .fillna(0)
-            .to_dict("records")
-        }
-
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
+        resultado = procesar_datos_kpi(db, equipo_id, df_input=merged)
+        
+        if not resultado:
+            raise HTTPException(status_code=422, detail="No hay datos para este equipo")
+        return resultado
     finally:
-        try:
-            os.remove(path)
-        except PermissionError:
-            pass
+        if os.path.exists(path): os.remove(path)

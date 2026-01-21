@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { Link } from 'react-router-dom'; // Importación necesaria
+import { Link } from 'react-router-dom';
 import { GoArrowUpRight } from 'react-icons/go';
 import './CardNav.css';
 
@@ -13,14 +13,56 @@ const CardNav = ({
   baseColor = '#fff',
   menuColor,
   buttonBgColor,
-  buttonTextColor
+  buttonTextColor,
+  onUploadSuccess
 }) => {
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const navRef = useRef(null);
   const cardsRef = useRef([]);
   const tlRef = useRef(null);
+  const fileInputRef = useRef(null);
 
+  // --- LÓGICA DE SUBIDA DE ARCHIVOS (FETCH CORREGIDO A PUERTO 8000) ---
+  const handleButtonClick = (e) => {
+    e.preventDefault();
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setIsUploading(true);
+    try {
+      // Usamos el puerto 8000 que indica tu VITE_API_URL
+      const response = await fetch('http://127.0.0.1:8000/api/stats/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert('Estadísticas cargadas correctamente');
+        if (onUploadSuccess) onUploadSuccess(data);
+      } else {
+        alert('Error al subir el archivo: El servidor no procesó la solicitud');
+      }
+    } catch (error) {
+      console.error('Error de conexión:', error);
+      alert('No se pudo conectar con el servidor (Python). Asegúrate de que el puerto 8000 esté activo.');
+    } finally {
+      setIsUploading(false);
+      // Limpiamos el input para permitir subir el mismo archivo otra vez si falla
+      event.target.value = '';
+    }
+  };
+
+  // --- LÓGICA DE ANIMACIÓN (GSAP) ---
   const calculateHeight = () => {
     const navEl = navRef.current;
     if (!navEl) return 260;
@@ -30,25 +72,16 @@ const CardNav = ({
       const contentEl = navEl.querySelector('.card-nav-content');
       if (contentEl) {
         const wasVisible = contentEl.style.visibility;
-        const wasPointerEvents = contentEl.style.pointerEvents;
-        const wasPosition = contentEl.style.position;
-        const wasHeight = contentEl.style.height;
-
         contentEl.style.visibility = 'visible';
-        contentEl.style.pointerEvents = 'auto';
         contentEl.style.position = 'static';
         contentEl.style.height = 'auto';
-
-        contentEl.offsetHeight;
 
         const topBar = 60;
         const padding = 16;
         const contentHeight = contentEl.scrollHeight;
 
         contentEl.style.visibility = wasVisible;
-        contentEl.style.pointerEvents = wasPointerEvents;
-        contentEl.style.position = wasPosition;
-        contentEl.style.height = wasHeight;
+        contentEl.style.position = 'absolute';
 
         return topBar + contentHeight + padding;
       }
@@ -71,7 +104,13 @@ const CardNav = ({
       ease
     });
 
-    tl.to(cardsRef.current, { y: 0, opacity: 1, duration: 0.4, ease, stagger: 0.08 }, '-=0.1');
+    tl.to(cardsRef.current, { 
+      y: 0, 
+      opacity: 1, 
+      duration: 0.4, 
+      ease, 
+      stagger: 0.08 
+    }, '-=0.1');
 
     return tl;
   };
@@ -133,7 +172,21 @@ const CardNav = ({
 
   return (
     <div className={`card-nav-container ${className}`}>
-      <nav ref={navRef} className={`card-nav ${isExpanded ? 'open' : ''}`} style={{ backgroundColor: baseColor }}>
+      <nav 
+        ref={navRef} 
+        className={`card-nav ${isExpanded ? 'open' : ''}`} 
+        style={{ backgroundColor: baseColor }}
+      >
+        
+        {/* INPUT DE ARCHIVO OCULTO */}
+        <input 
+          type="file" 
+          ref={fileInputRef} 
+          style={{ display: 'none' }} 
+          onChange={handleFileChange}
+          accept=".csv, .xlsx, .json"
+        />
+
         <div className="card-nav-top">
           <div
             className={`hamburger-menu ${isHamburgerOpen ? 'open' : ''}`}
@@ -154,9 +207,14 @@ const CardNav = ({
           <button
             type="button"
             className="card-nav-cta-button"
-            style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}
+            onClick={handleButtonClick}
+            disabled={isUploading}
+            style={{ 
+              backgroundColor: isUploading ? '#ccc' : buttonBgColor, 
+              color: buttonTextColor 
+            }}
           >
-            TEAMS
+            {isUploading ? 'CARGANDO...' : 'SUBIR ARCHIVO'}
           </button>
         </div>
 
@@ -166,19 +224,24 @@ const CardNav = ({
               key={`${item.label}-${idx}`}
               className="nav-card"
               ref={setCardRef(idx)}
-              style={{ backgroundColor: item.bgColor, color: item.textColor }}
+              style={{ 
+                backgroundColor: item.bgColor, 
+                color: item.textColor 
+              }}
             >
               <div className="nav-card-label">{item.label}</div>
               <div className="nav-card-links">
                 {item.links?.map((lnk, i) => (
-                  /* Cambio clave: Usamos Link de react-router-dom para navegar sin recargar */
                   <Link 
                     key={`${lnk.label}-${i}`} 
                     className="nav-card-link" 
                     to={lnk.path || '/'} 
-                    onClick={toggleMenu} /* Cerramos el menú al hacer clic */
+                    onClick={toggleMenu}
                   >
-                    <GoArrowUpRight className="nav-card-link-icon" aria-hidden="true" />
+                    <GoArrowUpRight 
+                      className="nav-card-link-icon" 
+                      aria-hidden="true" 
+                    />
                     {lnk.label}
                   </Link>
                 ))}

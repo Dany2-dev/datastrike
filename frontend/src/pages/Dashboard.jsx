@@ -1,16 +1,41 @@
 import { useParams } from "react-router-dom";
+import { useState } from "react";
 import CardNav from "../components/ui/CardNav";
 import MagicBento from "../components/ui/MagicBento"; 
 import logoDataStrike from "../assets/logos/logo-datastrike.png"; 
 
 /**
- * Dashboard principal que integra la navegación superior, 
- * el sistema de tarjetas Magic Bento y el estilo visual neón.
+ * Dashboard principal corregido.
+ * Gestiona el estado global de los datos cargados para sincronizar
+ * la subida del Excel con la visualización en las tablas.
  */
 export default function Dashboard() {
   const { equipoId } = useParams();
+  
+  // Estado para forzar el refresco de componentes hijos si es necesario
+  const [refreshKey, setRefreshKey] = useState(0);
+  
+  // Estado que almacena los registros crudos (eventos) del Excel
+  const [uploadedData, setUploadedData] = useState(null); 
 
-  // Configuración de los items del menú desplegable superior
+  /**
+   * Maneja la respuesta exitosa del servidor tras subir el Excel.
+   * 'data' contiene el array de eventos (los 228 registros vistos en consola).
+   */
+  const handleUploadSuccess = (data) => {
+    console.log("Dashboard: Recibiendo datos de carga exitosa", data);
+    
+    // 1. Limpiamos datos anteriores para evitar conflictos
+    setUploadedData(null); 
+    
+    // 2. Usamos un pequeño delay para que React registre el "vacío" 
+    // y luego monte la tabla con los datos nuevos
+    setTimeout(() => {
+      setUploadedData(data); 
+      setRefreshKey(prev => prev + 1);
+    }, 50);
+  };
+  // Configuración de los ítems del menú de navegación
   const menuItems = [
     {
       label: "Análisis",
@@ -31,7 +56,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-[#020617] text-slate-200 overflow-x-hidden border-none">
       
-      {/* 1. Navegación Superior Estilo Card */}
+      {/* 1. Navegación Superior */}
       <CardNav 
         items={menuItems}
         logo={logoDataStrike}
@@ -40,14 +65,20 @@ export default function Dashboard() {
         menuColor="#a855f7" 
         buttonBgColor="#7e22ce" 
         buttonTextColor="#fff"
+        onUploadSuccess={handleUploadSuccess}
       />
       
-      {/* 2. Contenedor de Contenido Principal */}
+      {/* 2. Área de Contenido Principal */}
       <main className="pt-32 pb-10 flex flex-col items-center justify-center min-h-screen px-6 border-none">
         
-        {/* 3. Sistema Magic Bento con configuración Neón Morado */}
         <div className="w-full max-w-7xl flex justify-center border-none">
+            {/* Pasamos 'initialData' a MagicBento. 
+              Este prop contiene los eventos que se sumarán en la tabla.
+            */}
             <MagicBento 
+              key={refreshKey} 
+              equipoId={equipoId} 
+              initialData={uploadedData} 
               textAutoHide={true}
               enableStars={true}
               enableSpotlight={true}
@@ -64,20 +95,33 @@ export default function Dashboard() {
 
       </main>
 
-      {/* Estilo local para asegurar que no existan líneas blancas residuales */}
-      <style jsx global>{`
+      {/* 3. Estilos Globales corregidos. 
+        Se usa una etiqueta normal para evitar errores de 'non-boolean attribute jsx/global'.
+      */}
+      <style dangerouslySetInnerHTML={{ __html: `
         .card-grid, 
         .bento-section,
         .magic-bento-card-container {
             border-bottom: none !important;
             outline: none !important;
+            border: none !important;
         }
         body {
             background-color: #020617;
             margin: 0;
             padding: 0;
         }
-      `}</style>
+        ::-webkit-scrollbar {
+          width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #1e1b4b;
+          border-radius: 10px;
+        }
+      `}} />
     </div>
   );
 }
