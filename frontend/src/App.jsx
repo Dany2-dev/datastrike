@@ -11,20 +11,21 @@ import StaggeredMenu from "./components/ui/StaggeredMenu";
 function AppLayout() {
   const location = useLocation();
 
-  const hideMenuRoutes = ["/login"];
-  const hideMenu = hideMenuRoutes.includes(location.pathname);
+  // Ocultar menú solo en login
+  const hideMenu = location.pathname === "/login";
 
   return (
     <>
+      {/* Menú lateral (se conserva) */}
       {!hideMenu && (
         <StaggeredMenu
           position="left"
           isFixed={true}
-          accentColor="#5227FF"
-          menuButtonColor="#111827"
-          openMenuButtonColor="#5227FF"
+          accentColor="#3b82f6"          // azul profesional dark
+          menuButtonColor="#0f172a"      // slate-900
+          openMenuButtonColor="#3b82f6"
           items={[
-            { label: "Overview", ariaLabel: "Overview", link: "/" },
+            { label: "Inicio", ariaLabel: "Inicio", link: "/" },
             { label: "Teams", ariaLabel: "Teams", link: "/" },
             { label: "Players", ariaLabel: "Players", link: "/players" },
             { label: "Analysis", ariaLabel: "Analysis", link: "/dashboard/5" },
@@ -34,7 +35,8 @@ function AppLayout() {
         />
       )}
 
-      <div className="min-h-screen w-full">
+      {/* Contenido principal */}
+      <div className="min-h-screen bg-slate-900 text-slate-200">
         <Routes>
           <Route path="/login" element={<Login />} />
 

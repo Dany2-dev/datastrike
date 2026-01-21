@@ -38,6 +38,8 @@
   display: flex;
   align-items: center;
   user-select: none;
+  transition: opacity 0.3s ease;
+  margin-top: -60px;
 }
 
 .sm-logo-img {
@@ -59,10 +61,12 @@
   font-weight: 500;
   line-height: 1;
   overflow: visible;
+  margin-top: -60px;
+  pointer-events: auto;
 }
 
 .sm-toggle:focus-visible {
-  outline: 2px solid #ffffffaa;
+  outline: 2px solid #8400ffaa;
   outline-offset: 4px;
   border-radius: 4px;
 }
@@ -130,11 +134,13 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: clamp(260px, 38vw, 420px);
+  width: clamp(240px, 25vw, 320px);
   height: 100%;
-  background: white;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  /* CAMBIO A COLORES DE TU DASHBOARD */
+  background: #060010; 
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(132, 0, 255, 0.2);
   display: flex;
   flex-direction: column;
   padding: 6em 2em 2em 2em;
@@ -146,6 +152,8 @@
 [data-position='left'] .staggered-menu-panel {
   right: auto;
   left: 0;
+  border-left: none;
+  border-right: 1px solid rgba(132, 0, 255, 0.2);
 }
 
 .sm-prelayers {
@@ -153,7 +161,7 @@
   top: 0;
   right: 0;
   bottom: 0;
-  width: clamp(260px, 38vw, 420px);
+  width: clamp(240px, 25vw, 320px);
   pointer-events: none;
   z-index: 5;
 }
@@ -170,6 +178,7 @@
   height: 100%;
   width: 100%;
   transform: translateX(0);
+  background: #8400ff; /* Color morado de tu bento */
 }
 
 .sm-panel-inner {
@@ -191,7 +200,7 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 500;
-  color: var(--sm-accent, #ff0000);
+  color: #8400ff; /* Acento morado */
 }
 
 .sm-socials-list {
@@ -218,7 +227,7 @@
 }
 
 .sm-socials-link:focus-visible {
-  outline: 2px solid var(--sm-accent, #ff0000);
+  outline: 2px solid #8400ff;
   outline-offset: 3px;
 }
 
@@ -233,18 +242,16 @@
 .sm-socials-link {
   font-size: 1.2rem;
   font-weight: 500;
-  color: #111;
+  color: #e9e9ef; /* Texto claro sobre fondo oscuro */
   text-decoration: none;
   position: relative;
   padding: 2px 0;
   display: inline-block;
-  transition:
-    color 0.3s ease,
-    opacity 0.3s ease;
+  transition: color 0.3s ease, opacity 0.3s ease;
 }
 
 .sm-socials-link:hover {
-  color: var(--sm-accent, #ff0000);
+  color: #8400ff;
 }
 
 .sm-panel-title {
@@ -266,19 +273,17 @@
 
 .sm-panel-item {
   position: relative;
-  color: #000;
+  color: #fff; /* Texto blanco */
   font-weight: 600;
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   cursor: pointer;
   line-height: 1;
-  letter-spacing: -2px;
+  letter-spacing: -1px;
   text-transform: uppercase;
-  transition:
-    background 0.25s,
-    color 0.25s;
+  transition: background 0.25s, color 0.25s;
   display: inline-block;
   text-decoration: none;
-  padding-right: 1.4em;
+  padding-right: 1.1em;
 }
 
 .staggered-menu-panel .sm-socials-list .sm-socials-link {
@@ -306,7 +311,7 @@
 }
 
 .sm-panel-item:hover {
-  color: var(--sm-accent, #5227ff);
+  color: #8400ff; /* Cambio a tu morado al hacer hover */
 }
 
 .sm-panel-list[data-numbering] {
@@ -318,25 +323,25 @@
   content: counter(smItem, decimal-leading-zero);
   position: absolute;
   top: 0.1em;
-  right: 2.8em;
-  font-size: 18px;
+  right: 0.5em;
+  font-size: 14px;
   font-weight: 400;
-  color: var(--sm-accent, #5227ff);
+  color: #3b82f6; /* Azul neón de tu dashboard */
   letter-spacing: 0;
   pointer-events: none;
   user-select: none;
-  opacity: var(--sm-num-opacity, 0);
+  opacity: var(--sm-num-opacity, 1);
 }
 
 @media (max-width: 1024px) {
   .staggered-menu-panel {
-    width: 100%;
+    width: 300px;
     left: 0;
     right: 0;
   }
 
   .staggered-menu-wrapper[data-open] .sm-logo-img {
-    filter: invert(100%);
+    filter: none; /* Quitamos el invert para que el logo se vea original */
   }
 }
 
@@ -346,28 +351,9 @@
     left: 0;
     right: 0;
   }
+}
 
-  .staggered-menu-wrapper[data-open] .sm-logo-img {
-    filter: invert(100%);
-  }
-}
-.sm-logo {
-  margin-top: -60px;
-}
-.sm-toggle {
-  margin-top: -60px;
-}
 .staggered-menu-wrapper[data-open] .sm-logo {
   opacity: 0;
   pointer-events: none;
-}
-.sm-logo {
-  transition: opacity 0.3s ease;
-}
-
-.staggered-menu-wrapper[data-open] .sm-logo {
-  opacity: 0;
-}
-.sm-toggle {
-  pointer-events: auto;
 }

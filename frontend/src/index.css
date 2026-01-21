@@ -10,11 +10,11 @@ body,
   height: 100%;
 }
 
-/* Quitar estilos por defecto de Vite */
+/* Base dark global */
 body {
   margin: 0;
   padding: 0;
-  background: transparent;
+  background-color: #0f172a;
 }
 
 /* Evita que el root limite el layout */
